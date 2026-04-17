@@ -1,12 +1,11 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-import './App.css'
-import Header from './components/Header'
+import "./App.css";
+import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Flashcard from './components/Flashcard';
+import Flashcard from "./components/Flashcard";
 
-
-const data = [
+const flashcardInfo = [
   {
     title: "useState",
     definition: "A Hook that lets you add React state to function components.",
@@ -56,24 +55,87 @@ const data = [
     definition:
       'A syntax that allows you to "unpack" values from arrays or properties from objects into distinct variables, commonly used with props.',
   },
-
+  {
+    title: "Callback Function",
+    definition:
+      "A function passed as an argument to another function. In React, parents often pass callbacks to children so the child can trigger an update in the parent.",
+  },
+  {
+    title: "Props (Properties)",
+    definition:
+      "Arguments passed into React components. They are read-only and allow data to flow from a parent component down to a child component.",
+  },
+  {
+    title: "Fragment",
+    definition:
+      "A special wrapper (<>...</>) that lets you group multiple elements without adding an extra, unnecessary node to the DOM.",
+  },
+  {
+    title: "Conditional Rendering",
+    definition:
+      "The ability to display different UI elements based on certain conditions, often achieved using the ternary operator or logical && operator.",
+  },
+  {
+    title: "Virtual DOM",
+    definition:
+      "A lightweight copy of the real DOM that React keeps in memory. React uses it to figure out the most efficient way to update the user interface.",
+  },
+  {
+    title: "JSX",
+    definition:
+      "A syntax extension for JavaScript that looks like HTML. It allows you to write structured components that React transforms into actual DOM elements.",
+  },
+  {
+    title: "Arrow Functions",
+    definition:
+      "A concise way to write JavaScript functions using the => syntax. They are frequently used for component definitions and event handlers in React.",
+  },
+  {
+    title: "Immutable State",
+    definition:
+      "The principle that you should never modify state directly. Instead, you create a copy of the state with the desired changes and update it using a setter function.",
+  },
 ];
 
 function App() {
+  const [flipped, setFlipped] = useState(null);
+  const [viewedCards, setViewed] = useState(new Set());
+  const handleFlip = (flip) => {
+    setFlipped(flipped === flip ? null : flip);
+    setViewed((viewed) => new Set(viewed).add(flip));
+  };
+  const handleReset = () => {
+    setViewed(new Set());
+    setFlipped(null); //close the open card with reset
+  };
+
   return (
     <>
       <div className="min-h-screen flex flex-col bg-slate-50">
         <Header />
         <main>
-          <div>
-            <Flashcard/>
+          <div className="justify-items-center m-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {flashcardInfo.map((item, i) => (
+              <Flashcard
+                //i is the position in the array, key is a string attribute like an ID badge for each item in a list, react uses it to keep track of whats changed in a list instead of rerendering the entire list
+                key={i}
+                title={item.title}
+                definition={item.definition}
+                isFlipped={flipped === i}
+                onFlip={() => handleFlip(i)}
+              />
+            ))}
           </div>
         </main>
-
-        <Footer />
+        <div className="mb-30"></div>
+        {/* //.size is the number of elements/entries currently contained in a set of data 
+        //passing in the state as props, count and total 
+        //count is the .size() of viewedCards 
+        //total is the length of the flashcardInfo array */}
+        <Footer count={viewedCards.size} total={flashcardInfo.length} reset={handleReset} />
       </div>
     </>
   );
 }
 
-export default App
+export default App;
